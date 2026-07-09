@@ -1,0 +1,4 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'; import SiteHeader from '../../components/SiteHeader.astro'; import { games } from '../../data/games'; export function getStaticPaths(){return ['hidden-gems','under-20'].map(slug=>({params:{slug}}));} const slug=Astro.params.slug!; const title=slug==='hidden-gems'?'Hidden gems worth your next run':'The best roguelikes under $20'; const picks=slug==='under-20'?games.filter(g=>Number(g.price.replace(/[^0-9.]/g,''))<20):games.slice(10,20);
+---
+<BaseLayout title={`${title} | Rogue On Switch`}><SiteHeader /><main class="shell"><p class="breadcrumb"><a href="/">Home</a> / Collections / {title}</p><article class="detail"><p class="kicker">Curated collection</p><h1>{title}</h1><div class="related">{picks.map(game=><a href={`/games/${game.slug}/`}><h2>{game.title}</h2><p>{game.summary}</p></a>)}</div></article></main></BaseLayout>
