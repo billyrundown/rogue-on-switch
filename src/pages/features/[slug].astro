@@ -1,0 +1,4 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'; import SiteHeader from '../../components/SiteHeader.astro'; import { games } from '../../data/games'; export function getStaticPaths(){return ['local-co-op','short-runs','offline-play'].map(slug=>({params:{slug}}));} const slug=Astro.params.slug!; const title=slug==='local-co-op'?'Best local co-op roguelites':slug==='short-runs'?'Roguelikes for short sessions':'Offline roguelikes for Switch'; const picks=slug==='local-co-op'?games.filter(g=>g.coOp==='Local'):games.slice(0,9);
+---
+<BaseLayout title={`${title} | Rogue On Switch`}><SiteHeader /><main class="shell"><p class="breadcrumb"><a href="/">Home</a> / Features / {title}</p><article class="detail"><p class="kicker">Find by need</p><h1>{title}</h1><div class="related">{picks.map(game=><a href={`/games/${game.slug}/`}><h2>{game.title}</h2><p>{game.bestFor}</p></a>)}</div></article></main></BaseLayout>

@@ -1,0 +1,6 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'; import SiteHeader from '../../components/SiteHeader.astro'; import { games, guideTopics } from '../../data/games';
+export function getStaticPaths(){return guideTopics.map(([topic,title,description])=>({params:{topic},props:{title,description}}));} const {title,description}=Astro.props;
+const picks=games.slice(0,6); const jsonLd={'@context':'https://schema.org','@type':'ItemList',name:title,itemListElement:picks.map((game,position)=>({'@type':'ListItem',position,name:game.title,url:`https://rogueonswitch.com/games/${game.slug}/`}))};
+---
+<BaseLayout title={`${title} | Rogue On Switch`} description={description}><SiteHeader /><main class="shell"><p class="breadcrumb"><a href="/">Home</a> / Best / {title}</p><article class="detail"><p class="kicker">Editorial guide</p><h1>{title}</h1><p>{description} Each recommendation reflects run length, learning curve, Switch feel, and who will actually enjoy it.</p><div class="related">{picks.map((game,i)=><a href={`/games/${game.slug}/`}><p class="kicker">{String(i+1).padStart(2,'0')}</p><h2>{game.title}</h2><p>{game.bestFor}</p></a>)}</div></article></main><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} /></BaseLayout>

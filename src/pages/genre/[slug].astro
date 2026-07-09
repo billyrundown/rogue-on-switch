@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'; import SiteHeader from '../../components/SiteHeader.astro'; import { games, type Playstyle } from '../../data/games';
+const names:Record<string,Playstyle>={action:'Action',cards:'Cards',tactics:'Tactics',shooter:'Shooter','co-op':'Co-op'}; export function getStaticPaths(){return ['action','cards','tactics','shooter','co-op'].map(slug=>({params:{slug}}));} const style=names[Astro.params.slug!]; const picks=games.filter(g=>g.playstyle===style);
+---
+<BaseLayout title={`Best ${style} roguelikes on Nintendo Switch | Rogue On Switch`}><SiteHeader /><main class="shell"><p class="breadcrumb"><a href="/">Home</a> / Genres / {style}</p><article class="detail"><p class="kicker">Genre hub</p><h1>{style} runs on Switch</h1><p>Practical recommendations for players who know the feeling they want, even when they do not yet know the game.</p><div class="related">{picks.map(game=><a href={`/games/${game.slug}/`}><h2>{game.title}</h2><p>{game.summary}</p></a>)}</div></article></main></BaseLayout>
