@@ -28,7 +28,7 @@ jobs:
         run: for i in {1..20}; do curl --fail --silent http://127.0.0.1:4321/ && exit 0; sleep 1; done; cat /tmp/astro-preview.log; exit 1
       - run: node scripts/capture-visual-review.mjs
       - id: artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: visual-review-pr-${{ github.event.pull_request.number }}
           path: artifacts/visual-review
