@@ -1,8 +1,34 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro'; import SiteHeader from '../../components/SiteHeader.astro'; import { games } from '../../data/games';
-export function getStaticPaths() { return games.map(game => ({ params: { slug: game.slug }, props: { game } })); }
-const { game } = Astro.props;
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { games } from '../../data/games';
+import { getResearchAssetsBySiteSlug, researchFacts } from '../../data/research';
+
+export function getStaticPaths() { return games.map((game) => ({ params: { slug: game.slug }, props: { game } })); }
+const { game: seed } = Astro.props;
+const researchAsset = (await getResearchAssetsBySiteSlug()).get(seed.slug);
+const research = researchAsset?.entry;
+const game = researchFacts(seed, research) ?? seed;
+const cover = researchAsset?.cover;
+const { Content } = research ? await render(research) : { Content: undefined };
 const related = games.filter((item) => item.playstyle === game.playstyle && item.slug !== game.slug).slice(0,3);
 const jsonLd = { '@context':'https://schema.org', '@type':'VideoGame', name:game.title, genre:game.genre, gamePlatform:'Nintendo Switch', description:game.summary };
 ---
-<BaseLayout title={`${game.title} on Nintendo Switch | Rogue On Switch`} description={game.summary}><SiteHeader /><main class="shell"><p class="breadcrumb"><a href="/">Home</a> / <a href="/games/">Games</a> / {game.title}</p><article class="detail"><p class="kicker">{game.classification} · {game.playstyle}</p><h1>{game.title}</h1><p>{game.summary}</p><div class="facts"><div><b>Typical run</b>{game.runLength}</div><div><b>Switch price</b>{game.price}</div><div><b>Co-op</b>{game.coOp}</div></div><h2>Is it right for you?</h2><p><strong>Best for:</strong> {game.bestFor}</p><p><strong>Skip if:</strong> {game.skipIf}</p><h2>What carries between runs</h2><p>{game.progression}</p><h2>On Switch</h2><p>{game.switchNotes}</p><p class="kicker">Source: <a href={game.sourceUrl}>Nintendo eShop</a> · Last checked {game.lastChecked}</p><h2>Try next</h2><div class="related">{related.map(item => <a href={`/games/${item.slug}/`}><b>{item.title}</b><p>{item.playstyle} · {item.runLength}</p></a>)}</div></article></main><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} /></BaseLayout>
+<BaseLayout title={`${game.title} on Nintendo Switch | Rogue On Switch`} description={game.summary} image={cover}>
+  <SiteHeader />
+  <main class="shell"><p class="breadcrumb"><a href="/">Home</a> / <a href="/games/">Games</a> / {game.title}</p>
+    <article class="detail">
+      <div class:list={['game-detail-hero', { 'has-cover': Boolean(cover) }]}>
+        <div><p class="kicker">{game.classification} · {game.playstyle}</p><h1>{game.title}</h1><p>{game.summary}</p></div>
+        {cover && <img src={cover} alt={`${game.title} cover art`} />}
+      </div>
+      <div class="facts"><div><b>Typical run</b>{game.runLength}</div><div><b>Switch price</b>{game.price}</div><div><b>Co-op</b>{game.coOp}</div>{research && <><div><b>Switch release</b>{research.data.release_date}</div><div><b>Players</b>{research.data.players}</div><div><b>Developer</b>{research.data.developer}</div></>}</div>
+      {research && <section class="research-overview"><h2>Overview</h2><Content /></section>}
+      <h2>Is it right for you?</h2><p><strong>Best for:</strong> {game.bestFor}</p><p><strong>Skip if:</strong> {game.skipIf}</p>
+      <h2>What carries between runs</h2><p>{game.progression}</p><h2>On Switch</h2><p>{game.switchNotes}</p>
+      {research ? <p class="kicker">Research checked {research.data.last_verified} · <a href={research.data.official_website}>Official site</a> · <a href={research.data.nintendo_switch_url}>Nintendo listing</a> · <a href={research.data.image_source}>Cover source</a></p> : <p class="kicker">Source: <a href={game.sourceUrl}>Nintendo eShop</a> · Last checked {game.lastChecked}</p>}
+      <h2>Try next</h2><div class="related">{related.map(item => <a href={`/games/${item.slug}/`}><b>{item.title}</b><p>{item.playstyle} · {item.runLength}</p></a>)}</div>
+    </article>
+  </main><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</BaseLayout>
