@@ -8,7 +8,4 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="/favicon.svg" />
-</head><body><slot /></body></html>
-<style is:global>@import '../styles/global.css';</style>
-*** Add File: /Users/RundownAI/Documents/1_Coding/361-codex-work/rogue-on-switch/src/components/SiteHeader.astro
-<header class="site-header"><a class="brand" href="/"><strong>ROGUE</strong><span>ON SWITCH</span></a><nav aria-label="Primary"><a href="/games/">Games</a><a href="/best/best-roguelikes-on-nintendo-switch/">Best</a><a href="/genre/action/">Genres</a><a href="/features/local-co-op/">Features</a><a href="/collections/hidden-gems/">Collections</a></nav><a class="search" href="/games/" aria-label="Search games">⌕ <span>Search games</span></a></header>
+</head><body><slot /><style is:global>@import '../styles/global.css';</style></body></html>
