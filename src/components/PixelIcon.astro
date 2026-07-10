@@ -1,12 +1,13 @@
 ---
-type IconName = 'action' | 'cards' | 'tactics' | 'shooter' | 'coop' | 'book';
+import sword from 'pixelarticons/svg/sword.svg?raw';
+import card from 'pixelarticons/svg/card-text.svg?raw';
+import chess from 'pixelarticons/svg/chess.svg?raw';
+import target from 'pixelarticons/svg/target.svg?raw';
+import users from 'pixelarticons/svg/users.svg?raw';
+
+type IconName = 'action' | 'cards' | 'tactics' | 'shooter' | 'coop';
 const { name, label } = Astro.props as { name: IconName; label?: string };
+const artwork = { action: sword, cards: card, tactics: chess, shooter: target, coop: users }[name];
+const svg = artwork.replace('<svg ', '<svg class="pixel-pack-icon" aria-hidden="true" ');
 ---
-<svg class="pixel-icon" viewBox="0 0 32 32" role={label ? 'img' : 'presentation'} aria-label={label} aria-hidden={label ? undefined : 'true'} shape-rendering="crispEdges" focusable="false">
-  {name === 'action' && <><path d="M3 2h6v4h3v3h4v5h-4v4H9v5H4v-5H1v-5h4V9h3V6H3Z" fill="currentColor"/><path d="m20 4 4 4-2 2 7 7-4 4-7-7-2 2-4-4 4-4 2 2 2-2Z" fill="currentColor"/></>}
-  {name === 'cards' && <><path d="M6 4h16v21H6Zm3 3v15h10V7Z" fill="currentColor"/><path d="M22 8h5v18H10v-2h12Z" fill="currentColor"/><path d="M14 10h4v3h2v4h-2v3h-4v-3h-2v-4h2Z" fill="currentColor"/></>}
-  {name === 'tactics' && <><path d="M11 2h10v4h4v6h-3v14H8V12H5V6h6Zm1 8v4h6v-4Zm0 8v4h6v-4Z" fill="currentColor"/><path d="M3 27h24v2H3Z" fill="currentColor"/></>}
-  {name === 'shooter' && <><path d="M11 2h10v4h4v5h4v10h-4v5h-4v4H11v-4H7v-5H3V11h4V6h4Zm3 8v8h4v-8Z" fill="currentColor"/><path d="M14 0h4v4h-4Zm0 28h4v4h-4ZM0 14h4v4H0ZM28 14h4v4h-4Z" fill="currentColor"/></>}
-  {name === 'coop' && <><path d="M6 3h8v8H6Zm12 3h8v8h-8ZM3 14h14v14H3Zm13 4h13v10H16Z" fill="currentColor"/><path d="M7 17h6v7H7Zm12 4h5v4h-5Z" fill="var(--ink, #10110f)"/></>}
-  {name === 'book' && <><path d="M2 5h12l2 2 2-2h12v22H18l-2 2-2-2H2Zm3 4v15h9V10l-2-1Zm13 1v14h9V9h-7Z" fill="currentColor"/><path d="M14 10h4v17h-4Z" fill="currentColor"/><path d="M7 11h5v2H7Zm0 4h5v2H7Zm13-4h5v2h-5Zm0 4h5v2h-5Z" fill="var(--surface, #171816)"/></>}
-</svg>
+<span class="pixel-icon" role={label ? 'img' : undefined} aria-label={label} set:html={svg} />
