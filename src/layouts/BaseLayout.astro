@@ -1,11 +1,13 @@
 ---
-const { title, description = 'Find your next great run on Nintendo Switch.' } = Astro.props;
+const { title, description = 'Find your next great run on Nintendo Switch.', image } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const socialImage = image ? new URL(image, Astro.site) : undefined;
 ---
 <!doctype html><html lang="en"><head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width" />
   <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
+  {socialImage && <><meta property="og:image" content={socialImage} /><meta name="twitter:image" content={socialImage} /></>}
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="/favicon.svg" />
 </head><body><slot /><style is:global>@import '../styles/global.css';</style></body></html>
