@@ -13,7 +13,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.0.7"
+    "astro": "^7.0.7",
+    "pixelarticons": "^2.2.0"
   },
   "devDependencies": {
     "playwright": "^1.61.1"

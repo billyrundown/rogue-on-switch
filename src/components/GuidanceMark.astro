@@ -1,9 +1,5 @@
 ---
+import PixelUiIcon from './PixelUiIcon.astro';
 const { variant = 'check' } = Astro.props as { variant?: 'check' | 'cross' };
-const path = variant === 'check'
-  // A three-step descending stem with an ascending arm: legible as a check at 12px.
-  ? 'M0 7h3v3h3v3h3v-3h3V7h3V4h-3v3H9v3H6V7H3v3H0z'
-  // Two even, opposing pixel staircases keep the negative space in the X open.
-  : 'M0 0h4v3h3V0h3v3h3v4h-3v3h3v3h-3v-3H7v3H4v-3H0V7h3V4H0z';
 ---
-<span class:list={['pixel-mark', variant === 'check' ? 'pixel-check' : 'pixel-cross']} aria-hidden="true"><svg viewBox="0 0 16 16"><path d={path} /></svg></span>
+<span class:list={['pixel-mark', variant === 'check' ? 'pixel-check' : 'pixel-cross']} aria-hidden="true"><PixelUiIcon name={variant === 'check' ? 'check' : 'close'} /></span>
