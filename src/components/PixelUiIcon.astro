@@ -1,0 +1,12 @@
+---
+import arrowRight from 'pixelarticons/svg/arrow-right.svg?raw';
+import bookOpen from 'pixelarticons/svg/book-open.svg?raw';
+import check from 'pixelarticons/svg/check.svg?raw';
+import close from 'pixelarticons/svg/close.svg?raw';
+import search from 'pixelarticons/svg/search.svg?raw';
+type IconName = 'arrow-right' | 'book-open' | 'check' | 'close' | 'search';
+const { name, label } = Astro.props as { name: IconName; label?: string };
+const icons = { 'arrow-right': arrowRight, 'book-open': bookOpen, check, close, search };
+const svg = icons[name].replace('<svg ', '<svg class="pixel-ui-icon" aria-hidden="true" ');
+---
+<span class="pixel-ui-icon-wrap" role={label ? 'img' : undefined} aria-label={label} set:html={svg} />

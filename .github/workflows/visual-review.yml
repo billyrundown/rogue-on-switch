@@ -1,0 +1,78 @@
+name: Visual review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  render:
+    # Do not grant code from an untrusted fork permission to publish review files.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Start production preview
+        run: npm run preview -- --host 127.0.0.1 > /tmp/astro-preview.log 2>&1 &
+      - name: Wait for preview
+        run: for i in {1..20}; do curl --fail --silent http://127.0.0.1:4321/ && exit 0; sleep 1; done; cat /tmp/astro-preview.log; exit 1
+      - run: node scripts/capture-visual-review.mjs
+      - id: artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: visual-review-pr-${{ github.event.pull_request.number }}
+          path: artifacts/visual-review
+          retention-days: 30
+      - name: Publish review images and update PR comment
+        uses: actions/github-script@v8
+        env:
+          ARTIFACT_URL: ${{ steps.artifact.outputs.artifact-url }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const number = context.issue.number;
+            const branch = 'visual-review';
+            const folder = `pr-${number}`;
+            let baseTree;
+            try {
+              const ref = await github.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
+              baseTree = (await github.rest.git.getCommit({ owner, repo, commit_sha: ref.data.object.sha })).data.tree.sha;
+            } catch {
+              const main = await github.rest.git.getRef({ owner, repo, ref: 'heads/main' });
+              await github.rest.git.createRef({ owner, repo, ref: `refs/heads/${branch}`, sha: main.data.object.sha });
+              baseTree = (await github.rest.git.getCommit({ owner, repo, commit_sha: main.data.object.sha })).data.tree.sha;
+            }
+            const entries = [];
+            for (const filename of ['home-desktop.png', 'home-mobile.png']) {
+              const content = fs.readFileSync(path.join('artifacts/visual-review', filename)).toString('base64');
+              const blob = await github.rest.git.createBlob({ owner, repo, content, encoding: 'base64' });
+              entries.push({ path: `${folder}/${filename}`, mode: '100644', type: 'blob', sha: blob.data.sha });
+            }
+            const tree = await github.rest.git.createTree({ owner, repo, base_tree: baseTree, tree: entries });
+            const parent = await github.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
+            const commit = await github.rest.git.createCommit({ owner, repo, message: `Visual review for PR #${number}`, tree: tree.data.sha, parents: [parent.data.object.sha] });
+            await github.rest.git.updateRef({ owner, repo, ref: `heads/${branch}`, sha: commit.data.sha, force: true });
+            const raw = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${folder}`;
+            const files = await github.paginate(github.rest.pulls.listFiles, { owner, repo, pull_number: number, per_page: 100 });
+            const imageAssets = files.filter((file) => /\.(png|webp|jpe?g)$/i.test(file.filename));
+            const assets = imageAssets.length
+              ? `\n\n### Changed image assets\n${imageAssets.map((file) => `**${file.filename}**\n![${file.filename}](https://raw.githubusercontent.com/${owner}/${repo}/${context.payload.pull_request.head.sha}/${file.filename})`).join('\n\n')}`
+              : '';
+            const body = `<!-- visual-review -->\n## Visual review\n\n[Download both PNGs](${process.env.ARTIFACT_URL})\n\n### Desktop · 1440px\n![Desktop render](${raw}/home-desktop.png)\n\n### Mobile · 390px\n![Mobile render](${raw}/home-mobile.png)${assets}`;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number: number, per_page: 100 });
+            const existing = comments.data.find((comment) => comment.body?.includes('<!-- visual-review -->'));
+            if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            else await github.rest.issues.createComment({ owner, repo, issue_number: number, body });

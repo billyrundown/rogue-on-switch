@@ -1,0 +1,8 @@
+---
+import PixelUiIcon from './PixelUiIcon.astro';
+const { href, label } = Astro.props as { href: string; label: string };
+---
+<a class="button" href={href}>
+  <PixelUiIcon name="arrow-right" />
+  {label}
+</a>

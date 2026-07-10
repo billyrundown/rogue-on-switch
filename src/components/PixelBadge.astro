@@ -1,0 +1,4 @@
+---
+const { label, color } = Astro.props as { label: string; color: string };
+---
+<span class="type" style={`--type:${color}`}>{label}</span>

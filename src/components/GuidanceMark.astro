@@ -1,0 +1,5 @@
+---
+import PixelUiIcon from './PixelUiIcon.astro';
+const { variant = 'check' } = Astro.props as { variant?: 'check' | 'cross' };
+---
+<span class:list={['pixel-mark', variant === 'check' ? 'pixel-check' : 'pixel-cross']} aria-hidden="true"><PixelUiIcon name={variant === 'check' ? 'check' : 'close'} /></span>
