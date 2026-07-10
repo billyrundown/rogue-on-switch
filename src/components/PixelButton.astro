@@ -1,0 +1,7 @@
+---
+const { href, label } = Astro.props as { href: string; label: string };
+---
+<a class="button" href={href}>
+  <svg class="button-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 6h7V2h4v4h5v4h-5v4H7v-4H0z" /></svg>
+  {label}
+</a>
