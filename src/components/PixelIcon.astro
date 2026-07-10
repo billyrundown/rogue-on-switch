@@ -1,0 +1,13 @@
+---
+type IconName = 'action' | 'cards' | 'tactics' | 'shooter' | 'coop' | 'book';
+const { name, label } = Astro.props as { name: IconName; label?: string };
+---
+<svg class="pixel-icon" viewBox="0 0 32 32" role={label ? 'img' : 'presentation'} aria-label={label} aria-hidden={label ? undefined : 'true'} shape-rendering="crispEdges" focusable="false">
+  {name === 'action' && <><path d="M4 3h5v4h3v3h4v4h-4v4H9v4H5v-5H2v-4h4v-4h3V6H4Z" fill="currentColor"/><path d="m19 5 3 3-2 2 7 7-3 3-7-7-2 2-3-3 3-3 2 2 2-2Z" fill="currentColor"/></>}
+  {name === 'cards' && <><path d="M7 5h15v20H7Zm3 3v14h9V8Z" fill="currentColor"/><path d="M22 9h4v17H11v-1h11Z" fill="currentColor"/><path d="M14 11h4v3h2v3h-2v3h-4v-3h-2v-3h2Z" fill="currentColor"/></>}
+  {name === 'tactics' && <><path d="M11 3h10v4h4v5h-3v14H8V12H5V7h6Zm1 7v4h6v-4Zm0 8v4h6v-4Z" fill="currentColor"/><path d="M4 27h22v2H4Z" fill="currentColor"/></>}
+  {name === 'shooter' && <><path d="M12 2h8v5h5v8h-5v5h-8v-5H7V7h5ZM14 9v4h4V9Z" fill="currentColor"/><path d="M3 13h5v2H3Zm21 0h5v2h-5ZM15 3V0h2v3Zm0 29v-9h2v9Z" fill="currentColor"/></>}
+  {name === 'coop' && <><path d="M7 4h7v7H7Zm11 3h7v7h-7ZM4 14h13v13H4Zm12 4h13v9H16Z" fill="currentColor"/><path d="M7 17h7v7H7Zm12 3h7v4h-7Z" fill="var(--ink, #10110f)"/></>}
+  {name === 'book' && <><path d="M2 5h13v21H2Zm15 0h13v21H17Z" fill="currentColor"/><path d="M5 8h7v15H5Zm15 0h7v15h-7Z" fill="var(--ink, #10110f)"/><path d="M15 7h2v20h-2Z" fill="currentColor"/></>}
+</svg>
+<style>.pixel-icon{display:block;width:1em;height:1em;overflow:visible}</style>
